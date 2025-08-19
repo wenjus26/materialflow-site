@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="doc-title">MaterialFlow – Material Flow Management Module</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Blue & Warm Neutral -->
+    <!-- Application Structure Plan: I've designed a single-page application with smooth scrolling navigation. The structure is thematic rather than linear to improve exploration and understanding. It starts with an introduction (Hero), presents the problem and solution side-by-side for maximum impact, details features in interactive tabs to avoid information overload, features a report demo with a dynamic chart to make the concept tangible, summarizes benefits in a visual grid, and concludes with next steps. This architecture is designed for a logical and engaging user journey, transforming a passive presentation into an active discovery experience. -->
+    <!-- Visualization & Content Choices: 
+        - Problem (Slide 2) -> Goal: Compare -> Viz: "Before/After" columns with icons -> Interaction: Visual -> Justification: Provides a direct and powerful contrast between the old and new processes -> Method: HTML/Tailwind.
+        - Features (Slide 5-7) -> Goal: Organize/Inform -> Viz: Tabbed system -> Interaction: Click to switch content -> Justification: Allows the user to explore features at their own pace without being overwhelmed with information -> Method: HTML/JS.
+        - Report (Slide 9) -> Goal: Demonstrate/Change -> Viz: Interactive bar chart -> Interaction: Buttons to filter data (trucks/materials) -> Justification: Offers tangible, interactive proof of reporting capabilities, which is much more effective than a static image -> Library: Chart.js.
+        - Benefits (Slide 8) -> Goal: Inform -> Viz: Grid of cards with icons -> Interaction: Static/Hover -> Justification: Easy-to-scan format, visually appealing, and reinforces key points -> Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #2563eb;
+        }
+        .tab-btn.active {
+            border-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">MaterialFlow</h1>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#problem" class="nav-link text-gray-600 font-medium" data-i18n="nav-problem">The Problem</a>
+                <a href="#features" class="nav-link text-gray-600 font-medium" data-i18n="nav-features">Features</a>
+                <a href="#benefits" class="nav-link text-gray-600 font-medium" data-i18n="nav-benefits">Benefits</a>
+                <a href="#demo" class="nav-link text-gray-600 font-medium" data-i18n="nav-reports">Reports</a>
+                <select id="language-selector" class="p-2 border border-gray-300 rounded-lg">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                </select>
+                <a href="mailto:rejuste.wenoumi@epitech.eu" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" data-i18n="nav-next-step">Next Step</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="bg-white py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight" data-i18n="hero-title">Manage your material flows, <br class="hidden md:block"> effortlessly.</h2>
+                <p class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto" data-i18n="hero-subtitle">MaterialFlow is the digital management module that transforms logistics at the entrance to your factories. Simplify, secure, and optimize the traceability of every movement.</p>
+                <div class="mt-10">
+                    <a href="#problem" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition" data-i18n="hero-cta">Discover the solution</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="problem" class="py-20 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl md:text-4xl font-bold" data-i18n="problem-title">The end of paper registers</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="problem-subtitle">Compare the current manual process with the fluidity provided by MaterialFlow.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+                        <h4 class="text-2xl font-semibold text-red-600 mb-4" data-i18n="before-title">Before: The Manual Process</h4>
+                        <ul class="space-y-4 text-gray-700">
+                            <li class="flex items-start"><span class="text-xl mr-3">📄</span><div><strong class="font-semibold" data-i18n="before-1-strong">Manual Entry:</strong> <span data-i18n="before-1-text">Slow and tedious recording of every entry and exit on paper registers.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">⏳</span><div><strong class="font-semibold" data-i18n="before-2-strong">Inefficient Searches:</strong> <span data-i18n="before-2-text">Finding information is a time-consuming and often unsuccessful task.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">⚠️</span><div><strong class="font-semibold" data-i18n="before-3-strong">Lack of Reliability:</strong> <span data-i18n="before-3-text">High risk of errors, omissions, and illegible data.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">📉</span><div><strong class="font-semibold" data-i18n="before-4-strong">Limited Traceability:</strong> <span data-i18n="before-4-text">Nearly impossible to track the complete history of a material or truck.</span></div></li>
+                        </ul>
+                    </div>
+                    <div class="bg-blue-50 p-8 rounded-xl shadow-lg border-2 border-blue-500">
+                        <h4 class="text-2xl font-semibold text-blue-700 mb-4" data-i18n="after-title">After: With MaterialFlow</h4>
+                        <ul class="space-y-4 text-gray-800">
+                            <li class="flex items-start"><span class="text-xl mr-3">📱</span><div><strong class="font-semibold" data-i18n="after-1-strong">Digital Entry:</strong> <span data-i18n="after-1-text">Fast and intuitive recording on a simple and modern interface.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">🔍</span><div><strong class="font-semibold" data-i18n="after-2-strong">Instant Search:</strong> <span data-i18n="after-2-text">Immediate access to the history of all flows in just a few clicks.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">✅</span><div><strong class="font-semibold" data-i18n="after-3-strong">Reliable Data:</strong> <span data-i18n="after-3-text">Standardized, complete, and secure information.</span></div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">📈</span><div><strong class="font-semibold" data-i18n="after-4-strong">Complete Traceability:</strong> <span data-i18n="after-4-text">Tracking of every movement thanks to unique IDs and automatic timestamping.</span></div></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-20 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold" data-i18n="features-title">A complete and integrated solution</h3>
+                    <p class="mt-4 text-lg text-gray-600" data-i18n="features-subtitle">Discover the key features designed to optimize your operations.</p>
+                </div>
+                <div>
+                    <div class="border-b border-gray-200 mb-8 flex justify-center space-x-4 md:space-x-8">
+                        <button class="tab-btn py-4 px-1 text-lg border-b-2 border-transparent active" data-tab="management" data-i18n="features-tab-1">Flow Management</button>
+                        <button class="tab-btn py-4 px-1 text-lg border-b-2 border-transparent" data-tab="security" data-i18n="features-tab-2">Security & Traceability</button>
+                        <button class="tab-btn py-4 px-1 text-lg border-b-2 border-transparent" data-tab="supervision" data-i18n="features-tab-3">Supervision & Reports</button>
+                    </div>
+                    <div id="tab-content" class="max-w-4xl mx-auto">
+                        <div class="tab-pane active" id="management">
+                            <div class="grid md:grid-cols-2 gap-8 text-center">
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">🚚</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-1-title-1">Truck Entries & Exits</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-1-text-1">Easily record truck movements, with or without containers, in just a few seconds.</p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">📦</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-1-title-2">Material Entries & Exits</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-1-text-2">Ensure accurate tracking of all types of goods and materials that pass through your sites.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane hidden" id="security">
+                            <div class="grid md:grid-cols-2 gap-8 text-center">
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">🔐</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-2-title-1">Security & Permissions</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-2-text-1">Manage precise roles (agents, supervisors) and groups for controlled and secure data access.</p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">🔗</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-2-title-2">Unfailing Traceability</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-2-text-2">Each flow is identified by a unique `token` and `gate pass`, with automatic timestamping.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane hidden" id="supervision">
+                            <div class="grid md:grid-cols-2 gap-8 text-center">
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">📊</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-3-title-1">Automated Excel Reports</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-3-text-1">Generate reliable and customizable reports with one click to analyze your flows and make informed decisions.</p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <span class="text-4xl">🌐</span>
+                                    <h5 class="text-xl font-semibold mt-4 mb-2" data-i18n="features-pane-3-title-2">Multi-Gate Supervision</h5>
+                                    <p class="text-gray-600" data-i18n="features-pane-3-text-2">View and control the activity of multiple entry gates in real time from a centralized interface.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="benefits" class="py-20 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl md:text-4xl font-bold" data-i18n="benefits-title">Concrete benefits for your business</h3>
+                    <p class="mt-4 text-lg text-gray-600" data-i18n="benefits-subtitle">MaterialFlow is not just a tool, it's a lever for performance.</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">⚡️</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-1-title">Speed</h4>
+                        <p class="text-gray-600" data-i18n="benefit-1-text">Significantly reduce waiting time at your factory entrances and exits.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">📈</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-2-title">Traceability</h4>
+                        <p class="text-gray-600" data-i18n="benefit-2-text">Get precise and reliable tracking of every material and truck movement.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">🗃️</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-3-title">Centralization</h4>
+                        <p class="text-gray-600" data-i18n="benefit-3-text">All flow data is consolidated on a single, secure platform.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">💻</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-4-title">Accessibility</h4>
+                        <p class="text-gray-600" data-i18n="benefit-4-text">Access information in real-time from any authorized terminal.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">✅</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-5-title">Reliability</h4>
+                        <p class="text-gray-600" data-i18n="benefit-5-text">Eliminate manual entry errors and work with 100% reliable data.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                        <span class="text-3xl">💡</span>
+                        <h4 class="text-xl font-semibold my-3" data-i18n="benefit-6-title">Decision Making</h4>
+                        <p class="text-gray-600" data-i18n="benefit-6-text">Use clear reports to optimize the management of your resources and flows.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="py-20 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold" data-i18n="demo-title">Visualize your data in real time</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="demo-subtitle">Generate dynamic reports for a clear view of activity. Here is an example of movements over one week.</p>
+                </div>
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl border border-gray-200">
+                    <div class="flex justify-center space-x-4 mb-6">
+                        <button id="filter-all" class="px-4 py-2 text-sm font-semibold rounded-md bg-blue-600 text-white" data-i18n="filter-all">View All</button>
+                        <button id="filter-trucks" class="px-4 py-2 text-sm font-semibold rounded-md bg-white text-gray-700 border border-gray-300 hover:bg-gray-100" data-i18n="filter-trucks">Trucks Only</button>
+                        <button id="filter-materials" class="px-4 py-2 text-sm font-semibold rounded-md bg-white text-gray-700 border border-gray-300 hover:bg-gray-100" data-i18n="filter-materials">Materials Only</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="reportChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold" data-i18n="contact-title">Ready to transform your logistics?</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="contact-subtitle">The next step is simple: let's set up a pilot project on one of your sites to demonstrate the value of MaterialFlow in real conditions.</p>
+                <div class="mt-10">
+                    <a href="mailto:rejuste.wenoumi@epitech.eu" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition" data-i18n="contact-cta">Plan the pilot project</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <p data-i18n="footer-copyright">&copy; 2024 Evox Systems. All rights reserved.</p>
+            <p class="text-sm mt-2" data-i18n="footer-subtitle">MaterialFlow - A solution from the Evox information system.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Language Translation Logic ---
+            const translations = {
+                'en': {
+                    'doc-title': 'MaterialFlow – Material Flow Management Module',
+                    'nav-problem': 'The Problem',
+                    'nav-features': 'Features',
+                    'nav-benefits': 'Benefits',
+                    'nav-reports': 'Reports',
+                    'nav-next-step': 'Next Step',
+                    'hero-title': 'Manage your material flows, <br class="hidden md:block"> effortlessly.',
+                    'hero-subtitle': 'MaterialFlow is the digital management module that transforms logistics at the entrance to your factories. Simplify, secure, and optimize the traceability of every movement.',
+                    'hero-cta': 'Discover the solution',
+                    'problem-title': 'The end of paper registers',
+                    'problem-subtitle': 'Compare the current manual process with the fluidity provided by MaterialFlow.',
+                    'before-title': 'Before: The Manual Process',
+                    'before-1-strong': 'Manual Entry:',
+                    'before-1-text': 'Slow and tedious recording of every entry and exit on paper registers.',
+                    'before-2-strong': 'Inefficient Searches:',
+                    'before-2-text': 'Finding information is a time-consuming and often unsuccessful task.',
+                    'before-3-strong': 'Lack of Reliability:',
+                    'before-3-text': 'High risk of errors, omissions, and illegible data.',
+                    'before-4-strong': 'Limited Traceability:',
+                    'before-4-text': 'Nearly impossible to track the complete history of a material or truck.',
+                    'after-title': 'After: With MaterialFlow',
+                    'after-1-strong': 'Digital Entry:',
+                    'after-1-text': 'Fast and intuitive recording on a simple and modern interface.',
+                    'after-2-strong': 'Instant Search:',
+                    'after-2-text': 'Immediate access to the history of all flows in just a few clicks.',
+                    'after-3-strong': 'Reliable Data:',
+                    'after-3-text': 'Standardized, complete, and secure information.',
+                    'after-4-strong': 'Complete Traceability:',
+                    'after-4-text': 'Tracking of every movement thanks to unique IDs and automatic timestamping.',
+                    'features-title': 'A complete and integrated solution',
+                    'features-subtitle': 'Discover the key features designed to optimize your operations.',
+                    'features-tab-1': 'Flow Management',
+                    'features-tab-2': 'Security & Traceability',
+                    'features-tab-3': 'Supervision & Reports',
+                    'features-pane-1-title-1': 'Truck Entries & Exits',
+                    'features-pane-1-text-1': 'Easily record truck movements, with or without containers, in just a few seconds.',
+                    'features-pane-1-title-2': 'Material Entries & Exits',
+                    'features-pane-1-text-2': 'Ensure accurate tracking of all types of goods and materials that pass through your sites.',
+                    'features-pane-2-title-1': 'Security & Permissions',
+                    'features-pane-2-text-1': 'Manage precise roles (agents, supervisors) and groups for controlled and secure data access.',
+                    'features-pane-2-title-2': 'Unfailing Traceability',
+                    'features-pane-2-text-2': 'Each flow is identified by a unique `token` and `gate pass`, with automatic timestamping.',
+                    'features-pane-3-title-1': 'Automated Excel Reports',
+                    'features-pane-3-text-1': 'Generate reliable and customizable reports with one click to analyze your flows and make informed decisions.',
+                    'features-pane-3-title-2': 'Multi-Gate Supervision',
+                    'features-pane-3-text-2': 'View and control the activity of multiple entry gates in real time from a centralized interface.',
+                    'benefits-title': 'Concrete benefits for your business',
+                    'benefits-subtitle': "MaterialFlow is not just a tool, it's a lever for performance.",
+                    'benefit-1-title': 'Speed',
+                    'benefit-1-text': 'Significantly reduce waiting time at your factory entrances and exits.',
+                    'benefit-2-title': 'Traceability',
+                    'benefit-2-text': 'Get precise and reliable tracking of every material and truck movement.',
+                    'benefit-3-title': 'Centralization',
+                    'benefit-3-text': 'All flow data is consolidated on a single, secure platform.',
+                    'benefit-4-title': 'Accessibility',
+                    'benefit-4-text': 'Access information in real-time from any authorized terminal.',
+                    'benefit-5-title': 'Reliability',
+                    'benefit-5-text': 'Eliminate manual entry errors and work with 100% reliable data.',
+                    'benefit-6-title': 'Decision Making',
+                    'benefit-6-text': 'Use clear reports to optimize the management of your resources and flows.',
+                    'demo-title': 'Visualize your data in real time',
+                    'demo-subtitle': 'Generate dynamic reports for a clear view of activity. Here is an example of movements over one week.',
+                    'filter-all': 'View All',
+                    'filter-trucks': 'Trucks Only',
+                    'filter-materials': 'Materials Only',
+                    'contact-title': 'Ready to transform your logistics?',
+                    'contact-subtitle': "The next step is simple: let's set up a pilot project on one of your sites to demonstrate the value of MaterialFlow in real conditions.",
+                    'contact-cta': 'Plan the pilot project',
+                    'footer-copyright': '&copy; 2024 Evox Systems. All rights reserved.',
+                    'footer-subtitle': 'MaterialFlow - A solution from the Evox information system.',
+                    'chart-y-axis-title': 'Number of Movements',
+                    'chart-x-axis-title': 'Day of the Week',
+                    'chart-label-trucks': 'Truck Movements',
+                    'chart-label-materials': 'Material Movements',
+                    'day-monday': 'Monday',
+                    'day-tuesday': 'Tuesday',
+                    'day-wednesday': 'Wednesday',
+                    'day-thursday': 'Thursday',
+                    'day-friday': 'Friday',
+                    'day-saturday': 'Saturday',
+                    'day-sunday': 'Sunday'
+                },
+                'fr': {
+                    'doc-title': 'MaterialFlow – Module de Gestion des Flux Matières',
+                    'nav-problem': 'Le Problème',
+                    'nav-features': 'Fonctionnalités',
+                    'nav-benefits': 'Bénéfices',
+                    'nav-reports': 'Rapports',
+                    'nav-next-step': 'Prochaine Étape',
+                    'hero-title': 'Gérez vos flux matières, <br class="hidden md:block"> sans effort.',
+                    'hero-subtitle': 'MaterialFlow est le module de gestion digital qui transforme la logistique à l\'entrée de vos usines. Simplifiez, sécurisez, et optimisez la traçabilité de chaque mouvement.',
+                    'hero-cta': 'Découvrir la solution',
+                    'problem-title': 'La fin des registres papier',
+                    'problem-subtitle': 'Comparez le processus manuel actuel avec la fluidité offerte par MaterialFlow.',
+                    'before-title': 'Avant : Le Processus Manuel',
+                    'before-1-strong': 'Saisie Manuelle :',
+                    'before-1-text': 'Un enregistrement lent et fastidieux de chaque entrée et sortie sur des registres papier.',
+                    'before-2-strong': 'Recherches Inefficaces :',
+                    'before-2-text': 'Trouver une information est une tâche chronophage et souvent infructueuse.',
+                    'before-3-strong': 'Manque de Fiabilité :',
+                    'before-3-text': 'Risque élevé d\'erreurs, d\'omissions et de données illisibles.',
+                    'before-4-strong': 'Traçabilité Limitée :',
+                    'before-4-text': 'Presque impossible de suivre l\'historique complet d\'une matière ou d\'un camion.',
+                    'after-title': 'Après : Avec MaterialFlow',
+                    'after-1-strong': 'Saisie Digitale :',
+                    'after-1-text': 'Enregistrement rapide et intuitif sur une interface simple et moderne.',
+                    'after-2-strong': 'Recherche Instantanée :',
+                    'after-2-text': 'Accès immédiat à l\'historique de tous les flux en quelques clics.',
+                    'after-3-strong': 'Données Fiables :',
+                    'after-3-text': 'Informations standardisées, complètes et sécurisées.',
+                    'after-4-strong': 'Traçabilité Complète :',
+                    'after-4-text': 'Suivi de chaque mouvement grâce à des ID uniques et un horodatage automatique.',
+                    'features-title': 'Une solution complète et intégrée',
+                    'features-subtitle': 'Découvrez les fonctionnalités clés conçues pour optimiser vos opérations.',
+                    'features-tab-1': 'Gestion des Flux',
+                    'features-tab-2': 'Sécurité & Traçabilité',
+                    'features-tab-3': 'Supervision & Rapports',
+                    'features-pane-1-title-1': 'Entrées & Sorties Camions',
+                    'features-pane-1-text-1': 'Enregistrez facilement les mouvements de camions, avec ou sans conteneurs, en quelques secondes.',
+                    'features-pane-1-title-2': 'Entrées & Sorties Matières',
+                    'features-pane-1-text-2': 'Assurez un suivi précis de tous les types de biens et matières qui transitent sur vos sites.',
+                    'features-pane-2-title-1': 'Sécurité & Permissions',
+                    'features-pane-2-text-1': 'Gérez des rôles (agents, superviseurs) et des groupes précis pour un accès contrôlé et sécurisé aux données.',
+                    'features-pane-2-title-2': 'Traçabilité Infaillible',
+                    'features-pane-2-text-2': 'Chaque flux est identifié par un `token` et un `gate pass` unique, avec horodatage automatique.',
+                    'features-pane-3-title-1': 'Rapports Excel Automatisés',
+                    'features-pane-3-text-1': 'Générez en un clic des rapports fiables et personnalisables pour analyser vos flux et prendre des décisions éclairées.',
+                    'features-pane-3-title-2': 'Supervision Multi-portails',
+                    'features-pane-3-text-2': 'Visualisez et contrôlez l\'activité de plusieurs portails d\'entrée en temps réel depuis une interface centralisée.',
+                    'benefits-title': 'Des bénéfices concrets pour votre entreprise',
+                    'benefits-subtitle': "MaterialFlow n'est pas qu'un outil, c'est un levier de performance.",
+                    'benefit-1-title': 'Rapidité',
+                    'benefit-1-text': 'Réduisez significativement le temps d\'attente aux entrées et sorties de votre usine.',
+                    'benefit-2-title': 'Traçabilité',
+                    'benefit-2-text': 'Obtenez un suivi précis et fiable de chaque mouvement de matière et de camion.',
+                    'benefit-3-title': 'Centralisation',
+                    'benefit-3-text': 'Toutes les données de flux sont consolidées sur une seule plateforme sécurisée.',
+                    'benefit-4-title': 'Accessibilité',
+                    'benefit-4-text': 'Accédez aux informations en temps réel depuis n\'importe quel terminal autorisé.',
+                    'benefit-5-title': 'Fiabilité',
+                    'benefit-5-text': 'Éliminez les erreurs de saisie manuelle et travaillez avec des données 100% fiables.',
+                    'benefit-6-title': 'Prise de Décision',
+                    'benefit-6-text': 'Utilisez des rapports clairs pour optimiser la gestion de vos ressources et de vos flux.',
+                    'demo-title': 'Visualisez vos données en temps réel',
+                    'demo-subtitle': 'Générez des rapports dynamiques pour une vue claire de l\'activité. Voici un exemple des mouvements sur une semaine.',
+                    'filter-all': 'Tout Voir',
+                    'filter-trucks': 'Camions Seulement',
+                    'filter-materials': 'Matières Seulement',
+                    'contact-title': 'Prêt à transformer votre logistique ?',
+                    'contact-subtitle': "La prochaine étape est simple : mettons en place un projet pilote sur l'un de vos sites pour démontrer la valeur de MaterialFlow en conditions réelles.",
+                    'contact-cta': 'Planifier le projet pilote',
+                    'footer-copyright': '&copy; 2024 Evox Systems. Tous droits réservés.',
+                    'footer-subtitle': 'MaterialFlow - Une solution du système d\'information Evox.',
+                    'chart-y-axis-title': 'Nombre de mouvements',
+                    'chart-x-axis-title': 'Jour de la semaine',
+                    'chart-label-trucks': 'Mouvements de camions',
+                    'chart-label-materials': 'Mouvements de matières',
+                    'day-monday': 'Lundi',
+                    'day-tuesday': 'Mardi',
+                    'day-wednesday': 'Mercredi',
+                    'day-thursday': 'Jeudi',
+                    'day-friday': 'Vendredi',
+                    'day-saturday': 'Samedi',
+                    'day-sunday': 'Dimanche'
+                },
+                'es': {
+                    'doc-title': 'MaterialFlow – Módulo de Gestión de Flujos de Materiales',
+                    'nav-problem': 'El Problema',
+                    'nav-features': 'Características',
+                    'nav-benefits': 'Beneficios',
+                    'nav-reports': 'Informes',
+                    'nav-next-step': 'Siguiente Paso',
+                    'hero-title': 'Gestione sus flujos de materiales, <br class="hidden md:block"> sin esfuerzo.',
+                    'hero-subtitle': 'MaterialFlow es el módulo de gestión digital que transforma la logística en la entrada de sus fábricas. Simplifique, asegure y optimice la trazabilidad de cada movimiento.',
+                    'hero-cta': 'Descubrir la solución',
+                    'problem-title': 'El fin de los registros en papel',
+                    'problem-subtitle': 'Compare el proceso manual actual con la fluidez que ofrece MaterialFlow.',
+                    'before-title': 'Antes: El Proceso Manual',
+                    'before-1-strong': 'Entrada Manual:',
+                    'before-1-text': 'Registro lento y tedioso de cada entrada y salida en registros de papel.',
+                    'before-2-strong': 'Búsquedas Ineficientes:',
+                    'before-2-text': 'Encontrar información es una tarea que consume mucho tiempo y a menudo no tiene éxito.',
+                    'before-3-strong': 'Falta de Fiabilidad:',
+                    'before-3-text': 'Alto riesgo de errores, omisiones y datos ilegibles.',
+                    'before-4-strong': 'Trazabilidad Limitada:',
+                    'before-4-text': 'Casi imposible de seguir el historial completo de un material o camión.',
+                    'after-title': 'Después: Con MaterialFlow',
+                    'after-1-strong': 'Entrada Digital:',
+                    'after-1-text': 'Registro rápido e intuitivo en una interfaz simple y moderna.',
+                    'after-2-strong': 'Búsqueda Instantánea:',
+                    'after-2-text': 'Acceso inmediato al historial de todos los flujos en solo unos pocos clics.',
+                    'after-3-strong': 'Datos Fiables:',
+                    'after-3-text': 'Información estandarizada, completa y segura.',
+                    'after-4-strong': 'Trazabilidad Completa:',
+                    'after-4-text': 'Seguimiento de cada movimiento gracias a identificadores únicos y sellado de tiempo automático.',
+                    'features-title': 'Una solución completa e integrada',
+                    'features-subtitle': 'Descubra las características clave diseñadas para optimizar sus operaciones.',
+                    'features-tab-1': 'Gestión de Flujos',
+                    'features-tab-2': 'Seguridad y Trazabilidad',
+                    'features-tab-3': 'Supervisión e Informes',
+                    'features-pane-1-title-1': 'Entradas y Salidas de Camiones',
+                    'features-pane-1-text-1': 'Registre fácilmente los movimientos de camiones, con o sin contenedores, en solo unos segundos.',
+                    'features-pane-1-title-2': 'Entradas y Salidas de Materiales',
+                    'features-pane-1-text-2': 'Asegure un seguimiento preciso de todos los tipos de bienes y materiales que pasan por sus instalaciones.',
+                    'features-pane-2-title-1': 'Seguridad y Permisos',
+                    'features-pane-2-text-1': 'Gestione roles (agentes, supervisores) y grupos precisos para un acceso controlado y seguro a los datos.',
+                    'features-pane-2-title-2': 'Trazabilidad Infalible',
+                    'features-pane-2-text-2': 'Cada flujo se identifica con un `token` y un `gate pass` únicos, con sellado de tiempo automático.',
+                    'features-pane-3-title-1': 'Informes de Excel Automatizados',
+                    'features-pane-3-text-1': 'Genere con un solo clic informes fiables y personalizables para analizar sus flujos y tomar decisiones informadas.',
+                    'features-pane-3-title-2': 'Supervisión Multi-Puerta',
+                    'features-pane-3-text-2': 'Visualice y controle la actividad de múltiples puertas de entrada en tiempo real desde una interfaz centralizada.',
+                    'benefits-title': 'Beneficios concretos para su negocio',
+                    'benefits-subtitle': 'MaterialFlow no es solo una herramienta, es una palanca para el rendimiento.',
+                    'benefit-1-title': 'Velocidad',
+                    'benefit-1-text': 'Reduzca significativamente el tiempo de espera en las entradas y salidas de su fábrica.',
+                    'benefit-2-title': 'Trazabilidad',
+                    'benefit-2-text': 'Obtenga un seguimiento preciso y fiable de cada movimiento de material y camión.',
+                    'benefit-3-title': 'Centralización',
+                    'benefit-3-text': 'Todos los datos de flujo se consolidan en una única plataforma segura.',
+                    'benefit-4-title': 'Accesibilidad',
+                    'benefit-4-text': 'Acceda a la información en tiempo real desde cualquier terminal autorizado.',
+                    'benefit-5-title': 'Fiabilidad',
+                    'benefit-5-text': 'Elimine los errores de entrada manual y trabaje con datos 100% fiables.',
+                    'benefit-6-title': 'Toma de Decisiones',
+                    'benefit-6-text': 'Utilice informes claros para optimizar la gestión de sus recursos y flujos.',
+                    'demo-title': 'Visualice sus datos en tiempo real',
+                    'demo-subtitle': 'Genere informes dinámicos para una visión clara de la actividad. Aquí hay un ejemplo de movimientos durante una semana.',
+                    'filter-all': 'Ver Todo',
+                    'filter-trucks': 'Solo Camiones',
+                    'filter-materials': 'Solo Materiales',
+                    'contact-title': '¿Listo para transformar su logística?',
+                    'contact-subtitle': 'El siguiente paso es simple: configuremos un proyecto piloto en una de sus instalaciones para demostrar el valor de MaterialFlow en condiciones reales.',
+                    'contact-cta': 'Planificar el proyecto piloto',
+                    'footer-copyright': '&copy; 2024 Evox Systems. Todos los derechos reservados.',
+                    'footer-subtitle': 'MaterialFlow - Una solución del sistema de información Evox.',
+                    'chart-y-axis-title': 'Número de movimientos',
+                    'chart-x-axis-title': 'Día de la semana',
+                    'chart-label-trucks': 'Movimientos de camiones',
+                    'chart-label-materials': 'Movimientos de materiales',
+                    'day-monday': 'Lunes',
+                    'day-tuesday': 'Martes',
+                    'day-wednesday': 'Miércoles',
+                    'day-thursday': 'Jueves',
+                    'day-friday': 'Viernes',
+                    'day-saturday': 'Sábado',
+                    'day-sunday': 'Domingo'
+                }
+            };
+
+            const languageSelector = document.getElementById('language-selector');
+            const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+            const chartLabels = {
+                'en': {
+                    yAxis: 'Number of Movements',
+                    xAxis: 'Day of the Week',
+                    trucks: 'Truck Movements',
+                    materials: 'Material Movements',
+                    days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                },
+                'fr': {
+                    yAxis: 'Nombre de mouvements',
+                    xAxis: 'Jour de la semaine',
+                    trucks: 'Mouvements de camions',
+                    materials: 'Mouvements de matières',
+                    days: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+                },
+                'es': {
+                    yAxis: 'Número de movimientos',
+                    xAxis: 'Día de la semana',
+                    trucks: 'Movimientos de camiones',
+                    materials: 'Movimientos de materiales',
+                    days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+                }
+            };
+
+            function changeLanguage(lang) {
+                // Update HTML `lang` attribute
+                document.documentElement.lang = lang;
+                
+                // Update text content
+                elementsToTranslate.forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (key && translations[lang][key]) {
+                        // Check for bolded text within a translation string
+                        const translation = translations[lang][key];
+                        if (element.tagName === 'STRONG') {
+                            // If the element is a strong tag, just update its textContent
+                            element.textContent = translation;
+                        } else {
+                            // Use innerHTML to preserve line breaks if present
+                            element.innerHTML = translation;
+                        }
+                    }
+                });
+
+                // Update chart labels
+                updateChartLabels(lang);
+            }
+
+            function updateChartLabels(lang) {
+                if (reportChart) {
+                    reportChart.options.scales.y.title.text = chartLabels[lang].yAxis;
+                    reportChart.options.scales.x.title.text = chartLabels[lang].xAxis;
+                    reportChart.data.labels = chartLabels[lang].days;
+                    if (reportChart.data.datasets.length > 0) {
+                        reportChart.data.datasets[0].label = chartLabels[lang].trucks;
+                    }
+                    if (reportChart.data.datasets.length > 1) {
+                        reportChart.data.datasets[1].label = chartLabels[lang].materials;
+                    }
+                    reportChart.update();
+                }
+            }
+
+            languageSelector.addEventListener('change', (event) => {
+                changeLanguage(event.target.value);
+            });
+
+            // Set initial language to English
+            changeLanguage('en');
+
+            // --- Tab Switching Logic ---
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    
+                    panes.forEach(pane => {
+                        if (pane.id === target) {
+                            pane.classList.remove('hidden');
+                            pane.classList.add('active');
+                        } else {
+                            pane.classList.add('hidden');
+                            pane.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // --- Chart.js Logic ---
+            const chartData = {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                trucks: [22, 25, 18, 30, 28, 15, 8],
+                materials: [45, 50, 35, 62, 55, 25, 12]
+            };
+
+            const ctx = document.getElementById('reportChart').getContext('2d');
+            let reportChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels['en'].days, // Initial labels from English
+                    datasets: [
+                        {
+                            label: chartLabels['en'].trucks, // Initial label from English
+                            data: chartData.trucks,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: chartLabels['en'].materials, // Initial label from English
+                            data: chartData.materials,
+                            backgroundColor: 'rgba(107, 114, 128, 0.7)',
+                            borderColor: 'rgba(107, 114, 128, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: chartLabels['en'].yAxis // Initial title from English
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: chartLabels['en'].xAxis // Initial title from English
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+
+            function updateChart(datasets) {
+                reportChart.data.datasets = datasets;
+                reportChart.update();
+            }
+
+            document.getElementById('filter-all').addEventListener('click', () => {
+                updateChart([
+                    { ...reportChart.config.data.datasets[0], data: chartData.trucks },
+                    { ...reportChart.config.data.datasets[1], data: chartData.materials }
+                ]);
+                updateChartLabels(languageSelector.value);
+            });
+
+            document.getElementById('filter-trucks').addEventListener('click', () => {
+                updateChart([
+                    { ...reportChart.config.data.datasets[0], data: chartData.trucks }
+                ]);
+                updateChartLabels(languageSelector.value);
+            });
+
+            document.getElementById('filter-materials').addEventListener('click', () => {
+                updateChart([
+                    { ...reportChart.config.data.datasets[1], data: chartData.materials }
+                ]);
+                updateChartLabels(languageSelector.value);
+            });
+        });
+    </script>
+</body>
+</html>
